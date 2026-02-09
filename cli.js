@@ -27,7 +27,7 @@ function parseArgs(argv) {
 
 async function svgToGif(opts = {}) {
   const {
-    input     = 'seismic_wave.svg',
+    input     = null,
     output    = null,
     width     = 3840,
     height    = 2160,
@@ -38,6 +38,13 @@ async function svgToGif(opts = {}) {
     framesDir = '.svg2gif-frames',
   } = opts;
 
+  if (!input) {
+    console.error('Error: No input SVG file specified.');
+    console.error('Usage: svg2gif <input.svg> [options]');
+    console.error('Use --help for more information.');
+    process.exit(1);
+  }
+
   const outputPath = output || path.basename(input, path.extname(input)) + '.gif';
   const totalFrames = fps * duration;
   const inputPath = path.resolve(input);
@@ -47,17 +54,18 @@ async function svgToGif(opts = {}) {
     process.exit(1);
   }
 
+  // Only clean up frames directory after confirming valid SVG file
+  if (fs.existsSync(framesDir)) {
+    fs.rmSync(framesDir, { recursive: true });
+  }
+  fs.mkdirSync(framesDir, { recursive: true });
+
   console.log(`Input:    ${inputPath}`);
   console.log(`Output:   ${outputPath}`);
   console.log(`Viewport: ${width}x${height}`);
   console.log(`Capture:  ${totalFrames} frames at ${fps}fps (${duration}s)`);
   console.log(`Palette:  ${colors} colors`);
   console.log('');
-
-  if (fs.existsSync(framesDir)) {
-    fs.rmSync(framesDir, { recursive: true });
-  }
-  fs.mkdirSync(framesDir, { recursive: true });
 
   const browser = await puppeteer.launch({
     headless: true,
