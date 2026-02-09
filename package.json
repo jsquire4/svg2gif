@@ -1,0 +1,11 @@
+{
+  "name": "svg2gif",
+  "version": "1.0.0",
+  "description": "Convert animated SVGs to GIFs",
+  "bin": {
+    "svg2gif": "./cli.js"
+  },
+  "dependencies": {
+    "puppeteer": "^24.0.0"
+  }
+}
